@@ -18,10 +18,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('employees', [EmployeesController::class, 'index']);
-
 Route::post('register', [AuthController::class, 'register']);
 
 Route::post('login', [AuthController::class, 'login']);
 
-Route::get('logout', [AuthController::class, 'logout']);
+Route::middleware(['auth:sanctum'])->group(function() {
+
+    Route::get('employees', [EmployeesController::class, 'index']);
+
+    Route::get('logout', [AuthController::class, 'logout']);
+
+});
