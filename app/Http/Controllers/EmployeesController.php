@@ -13,6 +13,9 @@ class EmployeesController extends Controller
     public function index()
     {
         //
+        $employees = Employees::all();
+
+        return $employees;
     }
 
     /**
