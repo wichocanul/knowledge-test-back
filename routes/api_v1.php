@@ -30,4 +30,6 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
     Route::post('employees', [EmployeesController::class, 'create']);
 
+    Route::delete('employees/{id}', [EmployeesController::class, 'destroy']);
+
 });

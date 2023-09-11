@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employees;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -73,30 +74,6 @@ class EmployeesController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Employees $employees)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Employees $employees)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Employees $employees)
@@ -107,8 +84,23 @@ class EmployeesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employees $employees)
+    public function destroy($id)
     {
-        //
+        try {
+            $employed = Employees::findOrFail($id);
+
+            $employed->delete();
+
+            return response()->json([
+                'message' => 'employed was removed'
+            ], 200);
+
+        } catch (Exception $e) {
+
+            return response()->json([
+                'message' => 'The place not found'
+            ], 500);
+
+        }
     }
 }
