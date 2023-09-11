@@ -28,4 +28,6 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
     Route::get('logout', [AuthController::class, 'logout']);
 
+    Route::post('employees', [EmployeesController::class, 'create']);
+
 });
