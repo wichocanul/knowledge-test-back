@@ -25,13 +25,13 @@ class EmployeesController extends Controller
      */
     public function create(Request $request)
     {
-        //
+
         $validator = Validator::make($request->all(), [
             'proceedings' => 'required|integer',
             'name' => 'required|string|max:150',
             'birthdate' => 'required|date',
             'rfc' => 'required|string|max:13',
-            'email' => 'required|email|max:70',
+            'email' => 'required|email|max:70|unique:employees,email',
             'phone' => 'required|string|max:13'
         ], [
             'proceedings.required' => 'El campo "Proceedings" es obligatorio.',
@@ -46,6 +46,7 @@ class EmployeesController extends Controller
             'email.required' => 'El campo "Email" es obligatorio.',
             'email.email' => 'El campo "Email" debe ser una dirección de correo electrónico válida.',
             'email.max' => 'El campo "Email" no debe exceder los 70 caracteres de longitud.',
+            'email.unique' => 'El correo electrónico ingresado ya existe en la base de datos.',
             'phone.required' => 'El campo "Phone" es obligatorio.',
             'phone.string' => 'El campo "Phone" debe ser una cadena de caracteres.',
             'phone.max' => 'El campo "Phone" no debe exceder los 13 caracteres de longitud.'
@@ -76,9 +77,61 @@ class EmployeesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Employees $employees)
+    public function update(Request $request, $id)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'proceedings' => 'required|integer',
+            'name' => 'required|string|max:150',
+            'birthdate' => 'required|date',
+            'rfc' => 'required|string|max:13',
+            'email' => ['required', 'email', 'max:70', 'unique:employees,email,' . $id,],
+            'phone' => 'required|string|max:13'
+        ], [
+            'proceedings.required' => 'El campo "Proceedings" es obligatorio.',
+            'name.required' => 'El campo "Name" es obligatorio.',
+            'name.string' => 'El campo "Name" debe ser una cadena de caracteres.',
+            'name.max' => 'El campo "Name" no debe exceder los 150 caracteres de longitud.',
+            'birthdate.required' => 'El campo "Birthdate" es obligatorio con formato yyyy-mm-dd.',
+            'birthdate.date' => 'El campo "Birthdate" debe ser una fecha válida.',
+            'rfc.required' => 'El campo "RFC" es obligatorio.',
+            'rfc.string' => 'El campo "RFC" debe ser una cadena de caracteres.',
+            'rfc.max' => 'El campo "RFC" no debe exceder los 13 caracteres de longitud.',
+            'email.required' => 'El campo "Email" es obligatorio.',
+            'email.email' => 'El campo "Email" debe ser una dirección de correo electrónico válida.',
+            'email.max' => 'El campo "Email" no debe exceder los 70 caracteres de longitud.',
+            'email.unique' => 'El correo electrónico ingresado ya existe en la base de datos.',
+            'phone.required' => 'El campo "Phone" es obligatorio.',
+            'phone.string' => 'El campo "Phone" debe ser una cadena de caracteres.',
+            'phone.max' => 'El campo "Phone" no debe exceder los 13 caracteres de longitud.'
+        ]);
+
+        if($validator->fails()) {
+            $errors = $validator->errors()->all();
+            return response()->json([
+                'errors' => $errors
+            ], 422);
+        }
+
+        try {
+
+            $employed = Employees::findOrFail($id);
+
+            $employed->update($request->all());
+
+            return response()->json([
+                'message' => 'the employed was update',
+                'data' => $employed
+            ], 200);
+
+        } catch (Exception $e) {
+
+            return response()->json([
+                'message' => 'Error updating employed'
+            ], 500);
+
+        }
+
     }
 
     /**
